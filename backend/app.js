@@ -1,6 +1,7 @@
 import express from "express";
 import { generateAccessToken } from "./jwt.js";
 import bcrypt from "bcrypt";
+import cors from "cors";
 import { body, validationResult } from "express-validator";
 import { createUser, getUserByUsername } from "./queries/users.js";
 
@@ -9,6 +10,7 @@ import { createUser, getUserByUsername } from "./queries/users.js";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -68,7 +70,6 @@ app.post(
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
-
     const { username, password } = req.body;
 
     try {
