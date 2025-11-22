@@ -11,3 +11,7 @@ export const createUser = async (username, password) =>
 export const getUserByUsername = (username) => {
   return db.query("SELECT * FROM users WHERE username = $1", [username]);
 };
+
+export const getAllUsers = () => {
+  return db.query("SELECT id, username, created_at FROM users ORDER BY id ASC");
+};
