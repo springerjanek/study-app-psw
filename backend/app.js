@@ -3,14 +3,40 @@ import { generateAccessToken } from "./jwt.js";
 import bcrypt from "bcrypt";
 import cors from "cors";
 import { body, validationResult } from "express-validator";
-import { createUser, getUserByUsername } from "./queries/users.js";
+import { createUser, getUserByUsername, getAllUsers } from "./queries/users.js";
+import { getAllMessages, postMessage } from "./queries/messages.js";
+import { validateToken } from "./jwt.js";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 // GET https://example.com:4000/api/userOrders
 // Authorization: Bearer JWT_ACCESS_TOKEN
-
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+const server = createServer(app);
+
+export const socketIO = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173"],
+  },
+});
+
+socketIO.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+
+  socket.on("message", async (data) => {
+    //emit to frontend
+    socketIO.emit("messageResponse", data);
+    //save in db
+    await postMessage(data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -98,6 +124,48 @@ app.post(
   }
 );
 
-app.listen(7777, () => {
+app.get("/api/verify", validateToken, (req, res) => {
+  // If middleware passes, token is valid
+  res.json({ valid: true, user: req.user });
+});
+
+app.get("/api/users", async (req, res) => {
+  try {
+    const result = await getAllUsers();
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/api/allMessages", validateToken, async (req, res) => {
+  try {
+    const { roomId } = req.query;
+
+    // Validate roomId exists and is a valid number
+    if (!roomId) {
+      return res.status(400).json({
+        success: false,
+        error: "roomId query parameter is required",
+      });
+    }
+
+    const result = await getAllMessages(roomId);
+
+    res.json({
+      success: true,
+      messages: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch messages",
+    });
+  }
+});
+
+server.listen(7777, () => {
   console.log("Server running on port 7777");
 });
