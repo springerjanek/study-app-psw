@@ -12,21 +12,50 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "./AuthContext";
 
-export default function Login({ onSubmit }) {
-  const [email, setEmail] = useState("");
+export default function Login() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
+
+    setErrors({});
+
     try {
-      await onSubmit({ email, password, remember });
+      const result = await fetch("http://localhost:7777/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await result.json();
+
+      if (!result.ok) {
+        if (Array.isArray(data.errors)) {
+          const fieldErrors = data.errors.reduce((acc, error) => {
+            acc[error.path] = error.msg;
+            return acc;
+          }, {});
+          setErrors(fieldErrors);
+        } else {
+          setErrors({ form: data.error });
+        }
+        setLoading(false);
+        return;
+      }
+
+      login(data.user, data.token);
     } catch (err) {
-      setErrors({ form: err.message || "Login failed" });
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -52,21 +81,23 @@ export default function Login({ onSubmit }) {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  aria-invalid={!!errors.email}
-                  aria-describedby={errors.email ? "email-error" : undefined}
+                  id="username"
+                  name="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Your username"
+                  aria-invalid={!!errors.username}
+                  aria-describedby={
+                    errors.username ? "username-error" : undefined
+                  }
                   className="mt-1"
                 />
-                {errors.email && (
-                  <p id="email-error" className="mt-1 text-sm text-red-600">
-                    {errors.email}
+                {errors.username && (
+                  <p id="username-error" className="mt-1 text-sm text-red-600">
+                    {errors.username}
                   </p>
                 )}
               </div>
