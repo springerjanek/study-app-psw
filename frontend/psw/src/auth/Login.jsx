@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -21,6 +22,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -54,6 +56,7 @@ export default function Login() {
       }
 
       login(data.user, data.token);
+      navigate("/");
     } catch (err) {
       console.log(err);
     } finally {
