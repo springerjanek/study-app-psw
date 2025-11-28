@@ -8,6 +8,7 @@ import { getAllMessages, postMessage } from "./queries/messages.js";
 import { validateToken } from "./jwt.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { createRoom, getAllRooms } from "./queries/rooms.js";
 
 // GET https://example.com:4000/api/userOrders
 // Authorization: Bearer JWT_ACCESS_TOKEN
@@ -129,7 +130,7 @@ app.get("/api/verify", validateToken, (req, res) => {
   res.json({ valid: true, user: req.user });
 });
 
-app.get("/api/users", async (req, res) => {
+app.get("/api/users", validateToken, async (req, res) => {
   try {
     const result = await getAllUsers();
     res.json(result.rows);
@@ -162,6 +163,23 @@ app.get("/api/allMessages", validateToken, async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch messages",
+    });
+  }
+});
+
+app.get("/api/allRooms", validateToken, async (req, res) => {
+  try {
+    const result = await getAllRooms();
+
+    res.json({
+      success: true,
+      rooms: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to load rooms",
     });
   }
 });
