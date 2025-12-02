@@ -36,6 +36,14 @@ added_at TIMESTAMP DEFAULT NOW(),
 UNIQUE (room_id, user_id) -- prevents duplicates
 );
 
+CREATE TABLE room_access_requests (
+id SERIAL PRIMARY KEY,
+room_id INTEGER REFERENCES rooms(id) ON DELETE CASCADE,
+user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+requested_at TIMESTAMP DEFAULT NOW(),
+UNIQUE (room_id, user_id)
+);
+
 CREATE TABLE messages (
 id SERIAL PRIMARY KEY,
 room_id INTEGER REFERENCES rooms(id) ON DELETE CASCADE,
@@ -45,4 +53,3 @@ created_at TIMESTAMP DEFAULT NOW()
 );
 
 to-do ideas:
-show how many online users are there on a page total and also show how many are there in each room?
