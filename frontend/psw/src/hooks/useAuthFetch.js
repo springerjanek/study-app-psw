@@ -12,25 +12,21 @@ export function useAuthFetch() {
         ...options.headers,
       },
     };
+    const response = await fetch(`http://localhost:7777/api${url}`, config);
 
-    try {
-      const response = await fetch(`http://localhost:7777/api${url}`, config);
-
-      if (response.status === 401) {
-        // Token expired or invalid
-        logout();
-        throw new Error("Authentication failed");
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("API call failed:", error);
-      throw error;
+    if (response.status === 401) {
+      logout();
+      throw new Error("Authentication failed");
     }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Instead of throwing, return the JSON with success=false
+      return { success: false, ...data };
+    }
+
+    return data;
   };
 
   return { authFetch };
