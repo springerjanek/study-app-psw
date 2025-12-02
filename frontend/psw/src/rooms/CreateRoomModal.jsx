@@ -30,6 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { useAuth } from "@/auth/AuthContext";
 
 export const CreateRoomModal = ({ createRoom }) => {
   const [roomName, setRoomName] = useState("");
@@ -42,11 +43,13 @@ export const CreateRoomModal = ({ createRoom }) => {
   const [searchValue, setSearchValue] = useState("");
 
   const { authFetch } = useAuthFetch();
+  const { user: me } = useAuth();
 
   useEffect(() => {
     const loadUsers = async () => {
       const res = await authFetch("/users");
-      setUsers(res);
+      const displayedUsers = res.filter((user) => user.id !== me.id);
+      setUsers(displayedUsers);
     };
     loadUsers();
   }, []);
@@ -74,7 +77,7 @@ export const CreateRoomModal = ({ createRoom }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Create your room</Button>
+        <Button variant="outline">Create your study room!</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
@@ -88,7 +91,7 @@ export const CreateRoomModal = ({ createRoom }) => {
 
           <div className="grid gap-4">
             {/* ROOM NAME */}
-            <div className="grid gap-3">
+            <div className="grid gap-3 mt-1">
               <Label htmlFor="roomName">Room Name</Label>
               <Input
                 id="roomName"
@@ -162,7 +165,7 @@ export const CreateRoomModal = ({ createRoom }) => {
             </Popover>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="mt-5">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>

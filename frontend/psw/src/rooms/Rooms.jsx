@@ -1,9 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
-import { useAuth } from "../auth/AuthContext";
 import { CreateRoomModal } from "./CreateRoomModal";
-import { useState, useEffect } from "react";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { useRooms } from "@/hooks/useRooms";
 
 import {
   Item,
@@ -17,58 +15,81 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const Rooms = () => {
-  const [rooms, setRooms] = useState([]);
-  const { user } = useAuth();
-  const { authFetch } = useAuthFetch();
+  const {
+    rooms,
+    userRoomMemberships,
+    createRoom,
+    requestAccess,
+    fetchAllRooms,
+    fetchUserRoomMemberships,
+  } = useRooms();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAllRooms = async () => {
-      const result = await authFetch("/allRooms");
-      setRooms(result.rooms);
-    };
-
     fetchAllRooms();
+    fetchUserRoomMemberships();
   }, []);
 
-  const createRoom = async ({ name, description, users }) => {
-    const roomId = uuidv4();
-    const result = await authFetch("/createRoom", {
-      method: "POST",
-      body: JSON.stringify({
-        id: roomId,
-        name: name,
-        description: description,
-        users: users,
-        created_by: user.id,
-      }),
-    });
-
-    if (result.success) {
-      toast.success("Successfully created room!");
-    }
+  const joinRoom = async (roomId) => {
+    navigate(`/room/${roomId}`);
   };
 
   return (
-    <div>
-      Available Rooms:
-      {rooms.map((room) => {
-        const { id, name, description } = room;
-        return (
-          <Item key={id} variant="outline">
-            <ItemContent>
-              <ItemTitle>{name} ROOM</ItemTitle>
-              <ItemDescription>{description}</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <Button variant="outline" size="sm">
-                Join room.
-                {/* check if user has rights (is in room_members), also maybe request for join. */}
-              </Button>
-            </ItemActions>
-          </Item>
-        );
-      })}
-      <CreateRoomModal createRoom={createRoom} />
+    <div className="px-6">
+      <div className="flex justify-center my-6">
+        <CreateRoomModal createRoom={createRoom} />
+      </div>
+
+      <h2 className="text-xl font-semibold mb-4">Available Rooms:</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+        {rooms.map((room) => {
+          const { id, name, description } = room;
+
+          const isMember = userRoomMemberships.includes(id);
+
+          return (
+            <Item
+              key={id}
+              variant="outline"
+              className="w-full max-w-xs flex flex-col justify-between shadow-md"
+            >
+              <ItemContent>
+                <ItemMedia variant="image" className="mb-3">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/4595/4595043.png"
+                    className="w-20 h-20 object-contain mx-auto"
+                  />
+                </ItemMedia>
+
+                <ItemTitle className="text-center">{name} ROOM</ItemTitle>
+                <ItemDescription className="text-center">
+                  {description}
+                </ItemDescription>
+              </ItemContent>
+
+              <ItemActions className="flex justify-center p-3">
+                {isMember ? (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => joinRoom(id)}
+                  >
+                    Join Room
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => requestAccess(id)}
+                  >
+                    Request Access
+                  </Button>
+                )}
+              </ItemActions>
+            </Item>
+          );
+        })}
+      </div>
     </div>
   );
 };
