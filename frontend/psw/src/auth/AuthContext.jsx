@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const AuthContext = createContext(null);
 
@@ -25,23 +26,20 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load and validate auth state on mount
   useEffect(() => {
     async function checkAuth() {
       const storedToken = localStorage.getItem("token");
       const storedUser = localStorage.getItem("user");
 
       if (storedToken && storedUser) {
-        // Verify token with backend
         const result = await verifyToken(storedToken);
-        console.log(result);
+        console.log(result, user);
 
         if (result && result.valid) {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
         } else {
-          //TO DO: toast token expired/invalid based on err.name or whatever
-          //logout also?
+          toast.info("Invalid token, session expired.");
           localStorage.removeItem("token");
           localStorage.removeItem("user");
         }
@@ -57,6 +55,7 @@ export function AuthProvider({ children }) {
     setToken(authToken);
     localStorage.setItem("token", authToken);
     localStorage.setItem("user", JSON.stringify(userData));
+    toast.success("Successfully logged in!");
   };
 
   const logout = () => {
@@ -64,6 +63,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    toast.success("Successfully logged out!");
   };
 
   const isAuthenticated = !!token && !!user;
