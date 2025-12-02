@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "./AuthContext";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -58,7 +58,7 @@ export default function Login() {
       login(data.user, data.token);
       navigate("/");
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -159,12 +159,12 @@ export default function Login() {
             <div className="text-center text-sm">
               <p>
                 Don't have an account?{" "}
-                <a
+                <Link
                   className="font-medium underline-offset-4 hover:underline"
-                  href="#"
+                  to="/register"
                 >
                   Create account
-                </a>
+                </Link>
               </p>
             </div>
           </CardContent>
