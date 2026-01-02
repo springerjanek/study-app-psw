@@ -91,6 +91,7 @@ export const useRooms = () => {
       });
       if (result.success) {
         toast.success("User approved!");
+        fetchRoomDetails({ roomId });
       } else {
         toast.error(result.error);
       }
