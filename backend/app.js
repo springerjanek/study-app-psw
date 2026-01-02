@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { createServer } from "http";
+import fs from "fs";
+import { createServer } from "https";
 import { setupSocketIO } from "./config/socket.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -11,7 +12,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const server = createServer(app);
+const options = {
+  key: fs.readFileSync("./localhost-key.pem"),
+  cert: fs.readFileSync("./localhost.pem"),
+};
+
+const server = createServer(options, app);
 
 export const socketIO = setupSocketIO(server);
 
