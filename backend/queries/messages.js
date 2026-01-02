@@ -1,10 +1,9 @@
 import { db } from "../database.js";
 
 export const postMessage = (message) => {
-  console.log(message.created_at);
   return db.query(
     "INSERT INTO messages (room_id, user_id, content, created_at) VALUES ($1, $2, $3, $4)",
-    [message.roomId, message.userId, message.content, new Date()]
+    [message.roomId, message.user_id, message.content, new Date()]
   );
 };
 

@@ -70,7 +70,7 @@ router.get("/roomDetails", validateToken, async (req, res) => {
   }
 });
 
-router.post("/", validateToken, async (req, res) => {
+router.post("/createRoom", validateToken, async (req, res) => {
   try {
     const { name, description, users, created_by } = req.body;
 
