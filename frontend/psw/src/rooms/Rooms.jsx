@@ -54,10 +54,10 @@ export const Rooms = () => {
               className="w-full max-w-xs flex flex-col justify-between shadow-md"
             >
               <ItemContent>
-                <ItemMedia variant="image" className="mb-3">
+                <ItemMedia variant="image" className="mb-3 m-auto">
                   <img
                     src="https://cdn-icons-png.flaticon.com/512/4595/4595043.png"
-                    className="w-20 h-20 object-contain mx-auto"
+                    className="w-20 h-20 object-contain"
                   />
                 </ItemMedia>
 
