@@ -60,7 +60,7 @@ export const Room = () => {
     });
 
     return () => {
-      socket.off("messageResponse"); // cleanup listener only
+      socket.off("messageResponse");
     };
   }, [roomId, socket, userHasRightsToEnter]);
 
@@ -74,7 +74,7 @@ export const Room = () => {
       socket.emit("message", {
         content: message,
         name: user.username,
-        userId: user.id,
+        user_id: user.id,
         id: `${socket.id}${Math.random()}`,
         roomId: roomId,
         socketID: socket.id,
@@ -113,15 +113,20 @@ export const Room = () => {
               <CardDescription>Real-time chat room</CardDescription>
             </CardHeader>
 
-            <ScrollArea className="max-h-64 flex-1 min-h-0 p-4">
+            <ScrollArea className="max-h-32 flex-1 min-h-0 p-4">
               <div className="space-y-4">
                 {allMessages.map((msg) => {
-                  const { name, content, created_at, userId } = msg;
-                  const isOwnMessage = userId === user.id;
+                  const { name, content, created_at, user_id } = msg;
+                  const isOwnMessage = user_id === user.id;
                   const date = new Date(created_at).toLocaleString();
 
                   return (
-                    <div key={created_at} className="flex gap-3">
+                    <div
+                      key={created_at}
+                      className={`flex gap-3 ${
+                        isOwnMessage ? "justify-end" : "justify-start"
+                      }`}
+                    >
                       <Avatar className="h-8 w-8">
                         <AvatarImage
                           src="https://github.com/evilrabbit.png"
