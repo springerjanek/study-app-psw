@@ -10,6 +10,8 @@ import {
   requestRoomAccess,
   approveUserRequest,
   getRoomOwnerUserId,
+  deleteRoom,
+  searchRoomsByName,
 } from "../queries/rooms.js";
 
 const router = express.Router();
@@ -137,7 +139,7 @@ router.post("/requestRoomAccess", validateToken, async (req, res) => {
   }
 });
 
-router.post("/approveUserRequest", validateToken, async (req, res) => {
+router.patch("/approveUserRequest", validateToken, async (req, res) => {
   try {
     const { room_id, user_id } = req.body;
 
@@ -165,6 +167,67 @@ router.post("/approveUserRequest", validateToken, async (req, res) => {
     return res.status(500).json({
       success: false,
       error: err,
+    });
+  }
+});
+
+router.delete("/deleteRoom", validateToken, async (req, res) => {
+  try {
+    const { room_id } = req.body;
+
+    if (!room_id) {
+      return res.status(400).json({
+        success: false,
+        error: "room_id is required",
+      });
+    }
+
+    const roomOwnerId = await getRoomOwnerUserId(room_id);
+
+    if (req.user.id !== roomOwnerId) {
+      return res.status(403).json({
+        success: false,
+        error: "Only the room owner can delete the room",
+      });
+    }
+
+    await deleteRoom(room_id);
+
+    res.json({
+      success: true,
+      deletedRoomId: room_id,
+    });
+  } catch (error) {
+    console.error("Error deleting room:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete room",
+    });
+  }
+});
+
+router.get("/searchRooms", validateToken, async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({
+        success: false,
+        error: "Search query is required",
+      });
+    }
+
+    const result = await searchRoomsByName(q);
+
+    res.json({
+      success: true,
+      rooms: result.rows,
+    });
+  } catch (error) {
+    console.error("Error searching rooms:", error);
+    res.status(500).json({
+      success: false,
+      error: "Search failed",
     });
   }
 });

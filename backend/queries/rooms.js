@@ -104,3 +104,18 @@ export const approveUserRequest = async (room_id, user_id) => {
     [room_id, user_id]
   );
 };
+
+export const deleteRoom = async (room_id) => {
+  return db.query("DELETE FROM rooms WHERE id = $1", [room_id]);
+};
+
+export const searchRoomsByName = async (pattern) => {
+  return pool.query(
+    `
+    SELECT *
+    FROM rooms
+    WHERE name ILIKE '%' || $1 || '%'
+    `,
+    [pattern]
+  );
+};
