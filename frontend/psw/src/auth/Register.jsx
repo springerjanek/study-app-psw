@@ -35,7 +35,7 @@ export default function Register() {
     }
 
     try {
-      const result = await fetch("http://localhost:7777/api/createNewUser", {
+      const result = await fetch("https://localhost:7777/api/createNewUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

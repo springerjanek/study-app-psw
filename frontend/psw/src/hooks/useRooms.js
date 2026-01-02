@@ -86,7 +86,7 @@ export const useRooms = () => {
   const approveRequest = async ({ roomId, userId }) => {
     try {
       const result = await authFetch("/approveUserRequest", {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify({ room_id: roomId, user_id: userId }),
       });
       if (result.success) {

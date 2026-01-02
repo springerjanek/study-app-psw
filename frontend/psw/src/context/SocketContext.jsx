@@ -8,7 +8,7 @@ export const SocketProvider = ({ children }) => {
   const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
-    const s = io("http://localhost:7777");
+    const s = io("https://localhost:7777");
     setSocket(s);
 
     s.on("activeUsers", (count) => setUserCount(count));

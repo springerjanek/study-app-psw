@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 async function verifyToken(token) {
   try {
-    const response = await fetch("http://localhost:7777/api/verify", {
+    const response = await fetch("https://localhost:7777/api/verify", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

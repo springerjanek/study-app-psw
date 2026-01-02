@@ -4,7 +4,7 @@ import { postMessage } from "../queries/messages.js";
 export function setupSocketIO(server) {
   const socketIO = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173"],
+      origin: ["https://localhost:5173"],
     },
   });
 
