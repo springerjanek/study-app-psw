@@ -101,7 +101,6 @@ export const CreateRoomModal = ({ createRoom }) => {
               />
             </div>
 
-            {/* DESCRIPTION */}
             <div className="grid gap-3">
               <Label htmlFor="description">Description</Label>
               <Input
@@ -112,7 +111,6 @@ export const CreateRoomModal = ({ createRoom }) => {
               />
             </div>
 
-            {/* USER SELECT */}
             <Label htmlFor="users">Select your mates.</Label>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
