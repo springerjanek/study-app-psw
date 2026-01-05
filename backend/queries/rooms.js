@@ -82,7 +82,7 @@ export const getPendingApprovals = async (room_id) => {
   );
 };
 
-export const getRoomOwnerUserId = async (room_id, user_id) => {
+export const getRoomOwnerUserId = async (room_id) => {
   const result = await db.query("SELECT created_by FROM rooms WHERE id = $1", [
     room_id,
   ]);
@@ -110,12 +110,35 @@ export const deleteRoom = async (room_id) => {
 };
 
 export const searchRoomsByName = async (pattern) => {
-  return pool.query(
+  return db.query(
     `
     SELECT *
     FROM rooms
     WHERE name ILIKE '%' || $1 || '%'
     `,
     [pattern]
+  );
+};
+
+export const updateRoom = async ({ roomId, newName, newDescription }) => {
+  return db.query(
+    `
+    UPDATE rooms
+    SET
+      name = COALESCE($1, name),
+      description = COALESCE($2, description)
+    WHERE id = $3
+    `,
+    [newName, newDescription, roomId]
+  );
+};
+
+export const removeUserFromRoom = async ({ roomId, userId }) => {
+  return db.query(
+    `
+    DELETE FROM room_members
+    WHERE room_id = $1 AND user_id = $2
+    `,
+    [roomId, userId]
   );
 };
