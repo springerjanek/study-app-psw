@@ -100,6 +100,64 @@ export const useRooms = () => {
     }
   };
 
+  const searchRooms = async ({ query }) => {
+    try {
+      const result = await authFetch(`/searchRooms?q=${query}`);
+      if (result.success) {
+        setRooms(result.rooms);
+      }
+    } catch (error) {
+      console.error("Error searching rooms:", error);
+    }
+  };
+
+  const deleteRoom = async ({ roomId }) => {
+    try {
+      await authFetch(`/deleteRoom`, {
+        body: JSON.stringify({
+          room_id: roomId,
+        }),
+        method: "DELETE",
+      });
+      toast.success("Room deleted successfully!");
+    } catch (err) {
+      toast.error("Failed to delete room");
+    }
+  };
+
+  const updateRoom = async ({ roomId, newName, newDescription }) => {
+    try {
+      await authFetch(`/updateRoom`, {
+        body: JSON.stringify({
+          room_id: roomId,
+          newName,
+          newDescription,
+        }),
+        method: "PATCH",
+      });
+      toast.success("Room updated successfully!");
+      await fetchRoomDetails({ roomId });
+    } catch (err) {
+      toast.error("Failed to update room");
+    }
+  };
+
+  const removeMember = async ({ roomId, userId }) => {
+    try {
+      await authFetch(`/removeMember`, {
+        body: JSON.stringify({
+          room_id: roomId,
+          userId,
+        }),
+        method: "DELETE",
+      });
+      toast.success("Member removed successfully!");
+      await fetchRoomDetails({ roomId });
+    } catch (err) {
+      toast.error("Failed to remove member");
+    }
+  };
+
   return {
     rooms,
     roomDetails,
@@ -111,6 +169,10 @@ export const useRooms = () => {
     requestAccess,
     approveRequest,
     fetchRoomDetails,
+    searchRooms,
+    deleteRoom,
+    updateRoom,
+    removeMember,
     userHasRightsToEnter,
   };
 };
