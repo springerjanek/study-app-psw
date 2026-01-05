@@ -11,7 +11,9 @@ import {
   approveUserRequest,
   getRoomOwnerUserId,
   deleteRoom,
+  updateRoom,
   searchRoomsByName,
+  removeUserFromRoom,
 } from "../queries/rooms.js";
 
 const router = express.Router();
@@ -228,6 +230,60 @@ router.get("/searchRooms", validateToken, async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Search failed",
+    });
+  }
+});
+
+router.patch("/updateRoom", validateToken, async (req, res) => {
+  try {
+    const { room_id, newName, newDescription } = req.body;
+
+    const ownerId = await getRoomOwnerUserId(room_id);
+
+    if (req.user.id !== ownerId) {
+      return res.status(403).json({
+        success: false,
+        error: "Unauthorized",
+      });
+    }
+
+    await updateRoom({
+      roomId: room_id,
+      newName,
+      newDescription,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error updating room:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error",
+    });
+  }
+});
+
+router.delete("/removeMember", validateToken, async (req, res) => {
+  const { room_id, userId } = req.body;
+
+  try {
+    const ownerId = await getRoomOwnerUserId(room_id);
+
+    if (req.user.id !== ownerId) {
+      return res.status(403).json({
+        success: false,
+        error: "Unauthorized",
+      });
+    }
+
+    await removeUserFromRoom({ roomId: room_id, userId });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error removing user:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server error",
     });
   }
 });
