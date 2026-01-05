@@ -7,7 +7,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import { Rooms } from "./rooms/Rooms";
 import { Layout } from "./layout";
-import { Room } from "./rooms/Room";
+import { Room } from "./rooms/room/Room";
 
 export const Routing = () => {
   return (
