@@ -8,6 +8,7 @@ import Register from "./auth/Register";
 import { Rooms } from "./rooms/Rooms";
 import { Layout } from "./layout";
 import { Room } from "./rooms/room/Room";
+import { AdminPanel } from "./adminPanel/AdminPanel";
 
 export const Routing = () => {
   return (
@@ -26,6 +27,7 @@ export const Routing = () => {
             <Route path="/" element={<App />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/room/:roomId" element={<Room />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Route>
         </Routes>
       </AuthProvider>
