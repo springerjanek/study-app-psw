@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const AuthContext = createContext(null);
@@ -29,15 +29,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function checkAuth() {
       const storedToken = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
 
-      if (storedToken && storedUser) {
+      if (storedToken) {
         const result = await verifyToken(storedToken);
-        console.log(result, user);
 
         if (result && result.valid) {
           setToken(storedToken);
-          setUser(JSON.parse(storedUser));
+          setUser(result.user);
         } else {
           toast.info("Invalid token, session expired.");
           localStorage.removeItem("token");
@@ -54,7 +52,6 @@ export function AuthProvider({ children }) {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem("token", authToken);
-    localStorage.setItem("user", JSON.stringify(userData));
     toast.success("Successfully logged in!");
   };
 
@@ -62,7 +59,6 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     toast.success("Successfully logged out!");
   };
 
