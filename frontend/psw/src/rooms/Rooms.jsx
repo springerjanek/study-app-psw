@@ -40,7 +40,7 @@ export const Rooms = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      await searchRooms(searchQuery);
+      await searchRooms({ searchQuery });
     } else {
       fetchAllRooms();
     }
