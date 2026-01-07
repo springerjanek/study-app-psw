@@ -13,5 +13,11 @@ export const getUserByUsername = (username) => {
 };
 
 export const getAllUsers = () => {
-  return db.query("SELECT id, username, created_at FROM users ORDER BY id ASC");
+  return db.query(
+    "SELECT id, username, role, created_at FROM users ORDER BY id ASC"
+  );
+};
+
+export const deleteUserById = async (userId) => {
+  return db.query(`DELETE FROM users WHERE id = $1`, [userId]);
 };
