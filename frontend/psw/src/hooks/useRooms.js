@@ -100,9 +100,9 @@ export const useRooms = () => {
     }
   };
 
-  const searchRooms = async ({ query }) => {
+  const searchRooms = async ({ searchQuery }) => {
     try {
-      const result = await authFetch(`/searchRooms?q=${query}`);
+      const result = await authFetch(`/searchRooms?q=${searchQuery}`);
       if (result.success) {
         setRooms(result.rooms);
       }
