@@ -176,6 +176,7 @@ router.patch("/approveUserRequest", validateToken, async (req, res) => {
 router.delete("/deleteRoom", validateToken, async (req, res) => {
   try {
     const { room_id } = req.body;
+    const { id: userId, role } = req.user;
 
     if (!room_id) {
       return res.status(400).json({
@@ -184,24 +185,26 @@ router.delete("/deleteRoom", validateToken, async (req, res) => {
       });
     }
 
-    const roomOwnerId = await getRoomOwnerUserId(room_id);
+    if (role !== "admin") {
+      const roomOwnerId = await getRoomOwnerUserId(room_id);
 
-    if (req.user.id !== roomOwnerId) {
-      return res.status(403).json({
-        success: false,
-        error: "Only the room owner can delete the room",
-      });
+      if (userId !== roomOwnerId) {
+        return res.status(403).json({
+          success: false,
+          error: "Only the room owner or admin can delete the room",
+        });
+      }
     }
 
     await deleteRoom(room_id);
 
-    res.json({
+    return res.json({
       success: true,
       deletedRoomId: room_id,
     });
   } catch (error) {
     console.error("Error deleting room:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "Failed to delete room",
     });
