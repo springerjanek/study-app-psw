@@ -63,10 +63,11 @@ router.post("/login", userValidation, async (req, res) => {
     const token = generateAccessToken({
       username: user.username,
       id: user.id,
+      role: user.role,
     });
 
     res.json({
-      user: { id: user.id, username: user.username },
+      user: { id: user.id, username: user.username, role: user.role },
       token: token,
     });
   } catch (err) {
