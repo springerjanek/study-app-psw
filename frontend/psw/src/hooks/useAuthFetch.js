@@ -12,7 +12,7 @@ export function useAuthFetch() {
         ...options.headers,
       },
     };
-    const response = await fetch(`https://localhost:7777/api${url}`, config);
+    const response = await fetch(`/api${url}`, config);
 
     if (response.status === 401) {
       logout();

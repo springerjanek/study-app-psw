@@ -31,7 +31,7 @@ export default function Login() {
     setErrors({});
 
     try {
-      const result = await fetch("https://localhost:7777/api/login", {
+      const result = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
