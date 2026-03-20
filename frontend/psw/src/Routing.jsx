@@ -2,11 +2,11 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
-import App from "./app";
+import App from "./App";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import { Rooms } from "./rooms/Rooms";
-import { Layout } from "./layout";
+import { Layout } from "./Layout";
 import { Room } from "./rooms/room/Room";
 import { AdminPanel } from "./adminPanel/AdminPanel";
 
