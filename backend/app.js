@@ -3,6 +3,12 @@ import cors from "cors";
 import fs from "fs";
 import { createServer } from "https";
 import { setupSocketIO } from "./config/socket.js";
+import dotenv from "dotenv";
+
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
+
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -25,10 +31,10 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.use("/api", authRoutes);
-app.use("/api", userRoutes);
-app.use("/api", roomRoutes);
-app.use("/api", messageRoutes);
+app.use("/", authRoutes);
+app.use("/", userRoutes);
+app.use("/", roomRoutes);
+app.use("/", messageRoutes);
 
 server.listen(7777, "0.0.0.0", () => {
   console.log("Server running on port 7777");
